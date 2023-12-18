@@ -1,7 +1,7 @@
 if (WHISPER_SDL2)
     # stream
     set(TARGET stream-with-finality)
-    add_executable(${TARGET} stream.cpp)
+    add_executable(${TARGET} stream.cpp driver.cpp overlapIndex.cpp localConsensusByN.cpp)
 
     include(DefaultTargetOptions)
 

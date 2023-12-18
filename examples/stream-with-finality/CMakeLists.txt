@@ -10,5 +10,6 @@ endif ()
 
 set(CMAKE_CXX_STANDARD 17)
 
-# add_executable(test__overlapIndex test/test__overlapIndex.cpp overlapIndex.cpp)
+add_executable(test__localConsensusByN test/test__localConsensusByN.cpp localConsensusByN)
+add_executable(test__overlapIndex test/test__overlapIndex.cpp overlapIndex.cpp)
 add_executable(test__driver test/test__driver.cpp driver.cpp overlapIndex.cpp localConsensusByN.cpp)

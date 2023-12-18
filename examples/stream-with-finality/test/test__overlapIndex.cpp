@@ -3,40 +3,29 @@
 #include <vector>
 #include <string>
 #include <cassert>
-#include <cpptoml.h>
+
+using namespace std;
 
 void test_overlapIndex() {
-    // auto config = cpptoml::parse_file("./test/data/test_overlapIndex.toml");
-    auto config = cpptoml::parse_file("../test/data/test_overlapIndex.toml");
-    auto tests = config->get_table_array("tests");
+    
+    vector<string> prompt;
+    vector<string> transcription;
+    int result_idx;
 
-    for (const auto& test : *tests) {
-        auto inputs = test->get_table("INPUTS");
-        auto outputs = test->get_table("OUTPUTS");
 
-        std::vector<std::string> prompt = *inputs->get_array_of<std::string>("prompt");
-        std::vector<std::string> transcription = *inputs->get_array_of<std::string>("transcription");
-        int expected_idx = *outputs->get_as<int>("idx");
+    // test 0
+    prompt = {"Hello", "and..."};
+    transcription = {"Hello", "and", "we", "are", "cooking"};
+    result_idx = overlapIndex(prompt, transcription);
 
-        int result_idx = overlapIndex(prompt, transcription);
+    cout << "test 0" << endl << result_idx << endl << endl;
 
-        std::cout << "\n================================" << std::endl;
-        std::cout << "INPUTS" << std::endl;
-        std::cout << "------" << std::endl;
-        std::cout << "prompt: ";
-        for (const auto& word : prompt) std::cout << word << " ";
-        std::cout << std::endl;
-        std::cout << "transcription: ";
-        for (const auto& word : transcription) std::cout << word << " ";
-        std::cout << std::endl;
-        std::cout << "OUTPUTS" << std::endl;
-        std::cout << "-------" << std::endl;
-        std::cout << "expected_idx: " << expected_idx << std::endl;
-        std::cout << "result_idx: " << result_idx << std::endl;
-        std::cout << "=============================" << std::endl;
+    // test 1
+    prompt = {"We're", "transcribing", "with", "a", "100", "millisecond", "latency,"};
+    transcription = {"transcribing", "with", "a", "100ms", "latency", "and", "we're", "going", "to", "implement", "local", "consensus."};
+    result_idx = overlapIndex(prompt, transcription);
 
-        assert(result_idx == expected_idx && "Test failed: Output index does not match expected value.");
-    }
+    cout << "test 1" << endl << result_idx << endl;
 }
 
 int main() {

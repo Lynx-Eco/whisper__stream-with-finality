@@ -13,6 +13,12 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
+#include <chrono>
+#include <iomanip>
+#include <ctime>
+#include <array>
+#include <sstream>
+#include <unistd.h>
 
 #include "driver.hpp"
 
@@ -380,10 +386,26 @@ int main(int argc, char ** argv) {
                     auto [newTokens, ctxBuffer, committed_tokens] = driverInst.drive(text);
 
                     // print__our__tokens
+                    if (!newTokens.empty()) {
+                        // Get current datetime
+                        auto now = chrono::system_clock::now();
+                        auto now_c = chrono::system_clock::to_time_t(now);
+                        std::tm now_tm = *std::localtime(&now_c);
+                        std::stringstream datetime_ss;
+                        datetime_ss << std::put_time(&now_tm, "%Y-%m-%d %H:%M:%S");
+
+                        // Get hostname
+                        std::array<char, 256> hostname_buffer{};
+                        gethostname(hostname_buffer.data(), hostname_buffer.size());
+                        std::string hostname(hostname_buffer.data());
+
+                        // Prepend datetime and hostname
+                        cout << "[" << datetime_ss.str() << " " << hostname << "] ";
                     for (const auto& token : newTokens) {
                         cout << token << ' ';
                     }
                     cout << endl;
+                    }
                     // \print__our__tokens
                     
                 }

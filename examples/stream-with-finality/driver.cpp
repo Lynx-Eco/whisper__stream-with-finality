@@ -5,8 +5,10 @@
 #include <iostream>
 #include <sstream>
 
+#define DEBUG true
+
 driver::driver(int BUFFER_LEN, int LOCAL_AGREEMENT_N, int PROMPT_LEN)
-    : LOCAL_AGREEMENT_N(LOCAL_AGREEMENT_N), PROMPT_LEN(PROMPT_LEN), DEBUG(false), lines_read(0) {
+    : LOCAL_AGREEMENT_N(LOCAL_AGREEMENT_N), PROMPT_LEN(PROMPT_LEN), lines_read(0) {
     for (int i = 0; i < BUFFER_LEN; ++i) {
         ctxBuffer.emplace_back();
     }
@@ -34,8 +36,9 @@ std::tuple<std::vector<std::string>, std::deque<std::vector<std::string>>, std::
     committed_tokens.insert(committed_tokens.end(), newTokens.begin(), newTokens.end());
 
     if (DEBUG) {
-        std::cout << "drive with line: " << line << std::endl;
-        std::cout << "prompt: ";
+        std::cout << std::endl << "================================================================" << std::endl;
+        std::cout << std::endl << "drive with line:\n" << line << std::endl;
+        std::cout << "prompt:\n";
         for (const auto& token : prompt) std::cout << token << ' ';
         std::cout << "\nctxBuffer size: " << ctxBuffer.size() << std::endl;
         std::cout << "newTokens: ";

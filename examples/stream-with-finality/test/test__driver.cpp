@@ -132,12 +132,34 @@ void test_driver() {
 
         auto [newTokens, ctxBuffer, committed_tokens] = driverInst.drive(line);
 
-        cout << "drive( string: \"" << line << "\") ==> vector<string>: ";
-        cout << "{";
+        cout << "drive( string: \"" << line << "\") ==>" << endl << endl;
+        cout << "vector<string> newTokens:" << endl;
+
         for (const auto& token : newTokens) {
             cout << "\"" << token << "\", ";
         }
         cout << "}";
+        cout << endl;
+
+        cout << endl << "vector<vector<string>> ctxBuffer:\n";
+        cout << "{\n";
+        for (const vector<string>& buf : ctxBuffer) {
+            cout << "[";
+            for (const auto& token : buf) {
+                cout << "\"" << token << "\", ";
+            }
+            cout << "]\n";
+        }
+        cout << "}";
+
+        cout << endl;
+
+        cout << endl << "vector<string> committedTokens: \n";
+        cout << "[";
+        for (const auto& token : newTokens) {
+            cout << "\"" << token << "\", ";
+        }
+        cout << "]";
         cout << endl;
     }
 

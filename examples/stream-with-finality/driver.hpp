@@ -14,6 +14,7 @@ public:
 
 private:
     deque<vector<string>> ctxBuffer;
+    int BUFFER_LEN;
     int LOCAL_AGREEMENT_N;
     int PROMPT_LEN;
     vector<string> committed_tokens;

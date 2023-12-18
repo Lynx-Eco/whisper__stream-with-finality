@@ -8,7 +8,7 @@
 using namespace std;
 
 driver::driver(int BUFFER_LEN, int LOCAL_AGREEMENT_N, int PROMPT_LEN)
-    : LOCAL_AGREEMENT_N(LOCAL_AGREEMENT_N), PROMPT_LEN(PROMPT_LEN), lines_read(0) {
+    : BUFFER_LEN(BUFFER_LEN), LOCAL_AGREEMENT_N(LOCAL_AGREEMENT_N), PROMPT_LEN(PROMPT_LEN), lines_read(0) {
     for (int i = 0; i < BUFFER_LEN; ++i) {
         ctxBuffer.emplace_back();
     }
@@ -20,6 +20,9 @@ tuple<vector<string>, deque<vector<string>>, vector<string>> driver::drive(const
     istringstream iss(line);
     for (string token; iss >> token;) {
         lineSanitizedTokens.push_back(token);
+    }
+    if (ctxBuffer.size() == BUFFER_LEN) {
+        ctxBuffer.pop_front();  // Remove from the front for LIFO behavior
     }
     ctxBuffer.push_back(lineSanitizedTokens);
 

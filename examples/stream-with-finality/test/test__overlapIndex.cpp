@@ -18,18 +18,26 @@ void test_overlapIndex() {
     transcription = {"Hello", "and", "we", "are", "cooking"};
     result_idx = overlapIndex(prompt, transcription);
 
-    cout << "test 0" << endl << result_idx << endl << endl;
+    int expected_idx = 2;
+
+    cout << "test 0" << endl;
+    cout << "======" << endl << result_idx << " : " <<  expected_idx << endl << endl;
+    assert(result_idx == expected_idx); // TODO: these are not tripping for some reason?
+
 
     // test 1
     prompt = {"We're", "transcribing", "with", "a", "100", "millisecond", "latency,"};
     transcription = {"transcribing", "with", "a", "100ms", "latency", "and", "we're", "going", "to", "implement", "local", "consensus."};
     result_idx = overlapIndex(prompt, transcription);
 
-    cout << "test 1" << endl << result_idx << endl;
+    expected_idx = 6;
+    cout << "test 1" << endl;
+    cout << "======" << endl << result_idx << " : " << expected_idx << endl;
+    assert(result_idx == expected_idx); // TODO: these are not tripping for some reason?
 }
 
 int main() {
     test_overlapIndex();
-    std::cout << "\nAll tests passed: Output indexes match expected values." << std::endl;
+    cout << "\nAll tests passed: Output indexes match expected values." << endl;
     return 0;
 }

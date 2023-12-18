@@ -22,7 +22,7 @@ void test_overlapIndex() {
 
     cout << "test 0" << endl;
     cout << "======" << endl << result_idx << " : " <<  expected_idx << endl << endl;
-    assert(result_idx == expected_idx); // TODO: these are not tripping for some reason?
+    assert(result_idx == expected_idx && "Test failed. No match."); // TODO: these are not tripping for some reason?
 
 
     // test 1
@@ -33,7 +33,7 @@ void test_overlapIndex() {
     expected_idx = 6;
     cout << "test 1" << endl;
     cout << "======" << endl << result_idx << " : " << expected_idx << endl;
-    assert(result_idx == expected_idx); // TODO: these are not tripping for some reason?
+    assert(result_idx == expected_idx && "Test failed. No match."); // TODO: these are not tripping for some reason?
 }
 
 int main() {

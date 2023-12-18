@@ -5,8 +5,6 @@
 #include <iostream>
 #include <sstream>
 
-#define DEBUG true
-
 driver::driver(int BUFFER_LEN, int LOCAL_AGREEMENT_N, int PROMPT_LEN)
     : LOCAL_AGREEMENT_N(LOCAL_AGREEMENT_N), PROMPT_LEN(PROMPT_LEN), lines_read(0) {
     for (int i = 0; i < BUFFER_LEN; ++i) {
@@ -34,17 +32,6 @@ std::tuple<std::vector<std::string>, std::deque<std::vector<std::string>>, std::
     // Get new tokens using the driver step function
     std::vector<std::string> newTokens = fnDriverStep(prompt, ctxBuffer, LOCAL_AGREEMENT_N);
     committed_tokens.insert(committed_tokens.end(), newTokens.begin(), newTokens.end());
-
-    if (DEBUG) {
-        std::cout << std::endl << "================================================================" << std::endl;
-        std::cout << std::endl << "drive with line:\n" << line << std::endl;
-        std::cout << "prompt:\n";
-        for (const auto& token : prompt) std::cout << token << ' ';
-        std::cout << "\nctxBuffer size: " << ctxBuffer.size() << std::endl;
-        std::cout << "newTokens: ";
-        for (const auto& token : newTokens) std::cout << token << ' ';
-        std::cout << std::endl;
-    }
 
     return {newTokens, ctxBuffer, committed_tokens};
 }

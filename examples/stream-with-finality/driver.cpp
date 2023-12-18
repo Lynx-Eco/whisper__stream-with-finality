@@ -5,6 +5,8 @@
 #include <iostream>
 #include <sstream>
 
+using namespace std;
+
 driver::driver(int BUFFER_LEN, int LOCAL_AGREEMENT_N, int PROMPT_LEN)
     : LOCAL_AGREEMENT_N(LOCAL_AGREEMENT_N), PROMPT_LEN(PROMPT_LEN), lines_read(0) {
     for (int i = 0; i < BUFFER_LEN; ++i) {
@@ -12,17 +14,17 @@ driver::driver(int BUFFER_LEN, int LOCAL_AGREEMENT_N, int PROMPT_LEN)
     }
 }
 
-std::tuple<std::vector<std::string>, std::deque<std::vector<std::string>>, std::vector<std::string>> driver::drive(const std::string& line) {
+tuple<vector<string>, deque<vector<string>>, vector<string>> driver::drive(const string& line) {
     // Tokenize and insert the line into the buffer
-    std::vector<std::string> lineSanitizedTokens;
-    std::istringstream iss(line);
-    for (std::string token; iss >> token;) {
+    vector<string> lineSanitizedTokens;
+    istringstream iss(line);
+    for (string token; iss >> token;) {
         lineSanitizedTokens.push_back(token);
     }
     ctxBuffer.push_back(lineSanitizedTokens);
 
     // Prepare prompt
-    std::vector<std::string> prompt;
+    vector<string> prompt;
     if (committed_tokens.size() > PROMPT_LEN) {
         prompt.assign(committed_tokens.end() - PROMPT_LEN, committed_tokens.end());
     } else {
@@ -30,16 +32,16 @@ std::tuple<std::vector<std::string>, std::deque<std::vector<std::string>>, std::
     }
 
     // Get new tokens using the driver step function
-    std::vector<std::string> newTokens = fnDriverStep(prompt, ctxBuffer, LOCAL_AGREEMENT_N);
+    vector<string> newTokens = fnDriverStep(prompt, ctxBuffer, LOCAL_AGREEMENT_N);
     committed_tokens.insert(committed_tokens.end(), newTokens.begin(), newTokens.end());
 
     return {newTokens, ctxBuffer, committed_tokens};
 }
 
-std::vector<std::string> driver::fnDriverStep(const std::vector<std::string>& prompt, const std::deque<std::vector<std::string>>& buffer, int LOCAL_AGREEMENT_N) {
-    std::vector<std::vector<std::string>> candidateBuffer;
+vector<string> driver::fnDriverStep(const vector<string>& prompt, const deque<vector<string>>& buffer, int LOCAL_AGREEMENT_N) {
+    vector<vector<string>> candidateBuffer;
     for (const auto& transcription : buffer) {
-        candidateBuffer.push_back(std::vector<std::string>(transcription.begin() + overlapIndex(prompt, transcription), transcription.end()));
+        candidateBuffer.push_back(vector<string>(transcription.begin() + overlapIndex(prompt, transcription), transcription.end()));
     }
 
     return localConsensusByN(candidateBuffer, LOCAL_AGREEMENT_N);

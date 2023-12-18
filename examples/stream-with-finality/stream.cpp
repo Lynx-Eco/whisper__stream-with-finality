@@ -365,12 +365,12 @@ int main(int argc, char ** argv) {
             // print result;
             {
                 if (!use_vad) {
-                    printf("\33[2K\r");
+                    // printf("\33[2K\r");
 
-                    // print long empty line to clear the previous line
-                    printf("%s", std::string(100, ' ').c_str());
+                    // // print long empty line to clear the previous line
+                    // printf("%s", std::string(100, ' ').c_str());
 
-                    printf("\33[2K\r");
+                    // printf("\33[2K\r");
                 } else {
                     const int64_t t1 = (t_last - t_start).count()/1000000;
                     const int64_t t0 = std::max(0.0, t1 - pcmf32.size()*1000.0/WHISPER_SAMPLE_RATE);

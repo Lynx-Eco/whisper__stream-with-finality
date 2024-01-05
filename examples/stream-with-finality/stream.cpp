@@ -21,8 +21,11 @@
 #include <unistd.h>
 
 #include "driver.hpp"
+#include "simpleTcpDebug.hpp"
 
 using namespace std;
+
+#define RAW_SEGMENT_TEXT_PORT 42000
 
 //  500 -> 00:05.000
 // 6000 -> 01:00.000
@@ -382,6 +385,8 @@ int main(int argc, char ** argv) {
                 const int n_segments = whisper_full_n_segments(ctx);
                 for (int i = 0; i < n_segments; ++i) {
                     const char * text = whisper_full_get_segment_text(ctx, i);
+
+                    sendMessageToPort(RAW_SEGMENT_TEXT_PORT, text);
 
                     auto [newTokens, ctxBuffer, committed_tokens] = driverInst.drive(text);
 

@@ -5,7 +5,7 @@
 #include <unistd.h>
 
 void sendMessageToPort(int port, std::string message) {
-    int sock = socket(AF_INET, SOCK_STREAM, 0);
+    int sock = socket(AF_INET, SOCK_DGRAM, 0);
     if (sock == -1) {
         std::cerr << "Could not create socket" << std::endl;
         return;
@@ -16,15 +16,16 @@ void sendMessageToPort(int port, std::string message) {
     server.sin_family = AF_INET;
     server.sin_port = htons(port);
 
-    if (connect(sock, (struct sockaddr *)&server, sizeof(server)) < 0) {
-        std::cerr << "Connect failed. Error" << std::endl;
-        return;
-    }
+    // Since UDP is connectionless, we do not need to connect to the server
+    // Removed the connect() call
 
-    if (send(sock, message.c_str(), message.size(), 0) < 0) {
+    message = "hello " + message; // Prepend "hello " to the message
+    if (sendto(sock, message.c_str(), message.size(), 0, (struct sockaddr *)&server, sizeof(server)) < 0) {
         std::cerr << "Send failed" << std::endl;
         return;
     }
 
-    close(sock);
+    // In UDP, there is no need to close the socket after each send
+    // You can close it when you want to stop the UDP service or when the program ends
+    // Removed the close() call
 }

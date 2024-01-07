@@ -232,6 +232,10 @@ int main(int argc, char ** argv) {
     bool listeningState = false;
     // Timestamp of the last time "giovanni" was mentioned
     auto last_giovanni_mention = chrono::steady_clock::now();
+    // Vector to store tokens while in the listening state
+    std::vector<std::string> giovanni_tokens;
+    // Port to send the concatenated tokens to
+    const int GIOVANI_PROMPT_PORT = 42010;
     bool is_running = true;
 
     ofstream fout;
@@ -391,12 +395,10 @@ int main(int argc, char ** argv) {
                 const int n_segments = whisper_full_n_segments(ctx);
                 for (int i = 0; i < n_segments; ++i) {
                     const char * text = whisper_full_get_segment_text(ctx, i);
-
                     sendMessageToPort(RAW_SEGMENT_TEXT_PORT, text);
 
                     auto [newTokens, ctxBuffer, committed_tokens] = driverInst.drive(text);
 
-                    // print__our__tokens
                     if (!newTokens.empty()) {
                         // Check if any token contains the word "giovanni"
                         bool contains_giovanni = std::any_of(newTokens.begin(), newTokens.end(), [](const std::string& token) {
@@ -407,6 +409,11 @@ int main(int argc, char ** argv) {
                         if (contains_giovanni) {
                             listeningState = true;
                             last_giovanni_mention = chrono::steady_clock::now();
+                        }
+
+                        // Store tokens if in listening state
+                        if (listeningState) {
+                            giovanni_tokens.insert(giovanni_tokens.end(), newTokens.begin(), newTokens.end());
                         }
 
                         // ANSI escape code for green text
@@ -443,6 +450,18 @@ int main(int argc, char ** argv) {
                         auto current_time = chrono::steady_clock::now();
                         if (listeningState && chrono::duration_cast<chrono::milliseconds>(current_time - last_giovanni_mention).count() > ATTENTION_SPAN_MS) {
                             listeningState = false;
+
+                            // Concatenate and send the stored tokens if any
+                            if (!giovanni_tokens.empty()) {
+                                std::string concatenated_tokens = std::accumulate(std::next(giovanni_tokens.begin()), giovanni_tokens.end(), giovanni_tokens[0],
+                                    [](std::string a, std::string b) { return std::move(a) + ' ' + b; });
+
+                                // Send the concatenated string to GIOVANI_PROMPT_PORT
+                                sendMessageToPort(GIOVANI_PROMPT_PORT, concatenated_tokens);
+
+                                // Clear the stored tokens
+                                giovanni_tokens.clear();
+                            }
                         }
                     }
                     // \print__our__tokens

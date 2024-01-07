@@ -226,6 +226,12 @@ int main(int argc, char ** argv) {
 
     int n_iter = 0;
 
+    // Define the attention span duration in milliseconds
+    const int ATTENTION_SPAN_MS = 2700; // Example value, adjust as needed
+    // Track whether we are in a listening state
+    bool listeningState = false;
+    // Timestamp of the last time "giovanni" was mentioned
+    auto last_giovanni_mention = chrono::steady_clock::now();
     bool is_running = true;
 
     ofstream fout;
@@ -397,9 +403,15 @@ int main(int argc, char ** argv) {
                             return token.find("giovanni") != std::string::npos;
                         });
 
+                        // Enter listening state if "giovanni" is mentioned
+                        if (contains_giovanni) {
+                            listeningState = true;
+                            last_giovanni_mention = chrono::steady_clock::now();
+                        }
+
                         // ANSI escape code for green text
-                        const std::string green_text_start = contains_giovanni ? "\033[32m" : "";
-                        const std::string green_text_end = contains_giovanni ? "\033[0m" : "";
+                        const std::string green_text_start = listeningState ? "\033[32m" : "";
+                        const std::string green_text_end = listeningState ? "\033[0m" : "";
 
                         // Get current datetime
                         auto now = chrono::system_clock::now();
@@ -423,11 +435,15 @@ int main(int argc, char ** argv) {
 
                         // Print the composed message
                         cout << message_ss.str() << endl;
-                    
 
-                        // and send it to the debug port 42001
+                        // Send the message to the debug port 42001
                         sendMessageToPort(42001, message_ss.str());
-
+                    } else {
+                        // Check if we should exit the listening state due to inactivity
+                        auto current_time = chrono::steady_clock::now();
+                        if (listeningState && chrono::duration_cast<chrono::milliseconds>(current_time - last_giovanni_mention).count() > ATTENTION_SPAN_MS) {
+                            listeningState = false;
+                        }
                     }
                     // \print__our__tokens
                     

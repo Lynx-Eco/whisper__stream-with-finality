@@ -19,7 +19,7 @@ void sendMessageToPort(int port, std::string message) {
     // Since UDP is connectionless, we do not need to connect to the server
     // Removed the connect() call
 
-    message = "hello " + message; // Prepend "hello " to the message
+    message = message + '\n'; // Prepend "hello " to the message
     if (sendto(sock, message.c_str(), message.size(), 0, (struct sockaddr *)&server, sizeof(server)) < 0) {
         std::cerr << "Send failed" << std::endl;
         return;

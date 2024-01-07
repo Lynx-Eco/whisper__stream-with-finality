@@ -404,12 +404,19 @@ int main(int argc, char ** argv) {
                         gethostname(hostname_buffer.data(), hostname_buffer.size());
                         std::string hostname(hostname_buffer.data());
 
-                        // Prepend datetime and hostname
-                        cout << "[" << datetime_ss.str() << " " << hostname << "] ";
-                    for (const auto& token : newTokens) {
-                        cout << token << ' ';
-                    }
-                    cout << endl;
+                        // Compose the message
+                        std::stringstream message_ss;
+                        message_ss << "[" << datetime_ss.str() << " " << hostname << "] ";
+                        for (const auto& token : newTokens) {
+                            message_ss << token << ' ';
+                        }
+
+                        // Print the composed message
+                        cout << message_ss.str() << endl;
+
+                        // and send it to the debug port 42001
+                        sendMessageToPort(42001, message_ss.str());
+
                     }
                     // \print__our__tokens
                     

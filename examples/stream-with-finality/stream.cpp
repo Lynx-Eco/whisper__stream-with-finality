@@ -392,9 +392,14 @@ int main(int argc, char ** argv) {
 
                     // print__our__tokens
                     if (!newTokens.empty()) {
+                        // Check if any token contains the word "giovanni"
+                        bool contains_giovanni = std::any_of(newTokens.begin(), newTokens.end(), [](const std::string& token) {
+                            return token.find("giovanni") != std::string::npos;
+                        });
+
                         // ANSI escape code for green text
-                        const std::string green_text_start = "\033[32m";
-                        const std::string green_text_end = "\033[0m";
+                        const std::string green_text_start = contains_giovanni ? "\033[32m" : "";
+                        const std::string green_text_end = contains_giovanni ? "\033[0m" : "";
 
                         // Get current datetime
                         auto now = chrono::system_clock::now();

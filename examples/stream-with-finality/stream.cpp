@@ -392,6 +392,10 @@ int main(int argc, char ** argv) {
 
                     // print__our__tokens
                     if (!newTokens.empty()) {
+                        // ANSI escape code for green text
+                        const std::string green_text_start = "\033[32m";
+                        const std::string green_text_end = "\033[0m";
+
                         // Get current datetime
                         auto now = chrono::system_clock::now();
                         auto now_c = chrono::system_clock::to_time_t(now);
@@ -406,13 +410,15 @@ int main(int argc, char ** argv) {
 
                         // Compose the message
                         std::stringstream message_ss;
-                        message_ss << "[" << datetime_ss.str() << " " << hostname << "] ";
+                        message_ss << green_text_start << "[" << datetime_ss.str() << " " << hostname << "] ";
                         for (const auto& token : newTokens) {
                             message_ss << token << ' ';
                         }
+                        message_ss << green_text_end;
 
                         // Print the composed message
                         cout << message_ss.str() << endl;
+                    
 
                         // and send it to the debug port 42001
                         sendMessageToPort(42001, message_ss.str());

@@ -25,8 +25,6 @@
 
 using namespace std;
 
-#define RAW_SEGMENT_TEXT_PORT 42000
-
 //  500 -> 00:05.000
 // 6000 -> 01:00.000
 string to_timestamp(int64_t t) {
@@ -67,6 +65,11 @@ struct whisper_params {
     string language  = "en";
     string model     = "models/ggml-base.en.bin";
     string fname_out;
+
+    // UDP socket stream params
+    int32_t confirmed_tokens_port = 42000;
+    int32_t raw_inference_frame_port = 42001;
+    int32_t giovanni_prompt_port = 42010;
 };
 
 void whisper_print_usage(int argc, char ** argv, const whisper_params & params);
@@ -74,6 +77,9 @@ void whisper_print_usage(int argc, char ** argv, const whisper_params & params);
 bool whisper_params_parse(int argc, char ** argv, whisper_params & params) {
     for (int i = 1; i < argc; i++) {
         string arg = argv[i];
+
+        cout << "=======================================" << endl;
+        cout << "parsing " << arg << " " << argv[i] << " " << argv[i + 1] << endl;
 
         if (arg == "-h" || arg == "--help") {
             whisper_print_usage(argc, argv, params);
@@ -99,6 +105,10 @@ bool whisper_params_parse(int argc, char ** argv, whisper_params & params) {
         else if (arg == "-tdrz" || arg == "--tinydiarize")   { params.tinydiarize   = true; }
         else if (arg == "-sa"   || arg == "--save-audio")    { params.save_audio    = true; }
         else if (arg == "-ng"   || arg == "--no-gpu")        { params.use_gpu       = false; }
+
+        else if (                  arg == "--raw-port")                   { params.raw_inference_frame_port = stoi(argv[++i]); }
+        else if (                  arg == "--confirmed-tokens-port")      { params.confirmed_tokens_port = stoi(argv[++i]); }
+        else if (                  arg == "--giovanni-prompt-port")       { params.giovanni_prompt_port = stoi(argv[++i]); }
 
         else {
             fprintf(stderr, "error: unknown argument: %s\n", arg.c_str());
@@ -395,7 +405,9 @@ int main(int argc, char ** argv) {
                 const int n_segments = whisper_full_n_segments(ctx);
                 for (int i = 0; i < n_segments; ++i) {
                     const char * text = whisper_full_get_segment_text(ctx, i);
-                    sendMessageToPort(RAW_SEGMENT_TEXT_PORT, text);
+
+                    // send raw inference to the raw inference port (default 42001)
+                    sendMessageToPort(params.raw_inference_frame_port, text);
 
                     auto [newTokens, ctxBuffer, committed_tokens] = driverInst.drive(text);
 
@@ -443,8 +455,8 @@ int main(int argc, char ** argv) {
                         // Print the composed message
                         cout << message_ss.str() << endl;
 
-                        // Send the message to the debug port 42001
-                        sendMessageToPort(42001, message_ss.str());
+                        // Send confirmed tokens to the debug port (defualt 42000)
+                        sendMessageToPort(params.confirmed_tokens_port, message_ss.str());
                     } else {
                         // Check if we should exit the listening state due to inactivity
                         auto current_time = chrono::steady_clock::now();
@@ -456,8 +468,8 @@ int main(int argc, char ** argv) {
                                 std::string concatenated_tokens = std::accumulate(std::next(giovanni_tokens.begin()), giovanni_tokens.end(), giovanni_tokens[0],
                                     [](std::string a, std::string b) { return std::move(a) + ' ' + b; });
 
-                                // Send the concatenated string to GIOVANI_PROMPT_PORT
-                                sendMessageToPort(GIOVANI_PROMPT_PORT, concatenated_tokens);
+                                // Send the concatenated string to GIOVANI_PROMPT_PORT (default 42010)
+                                sendMessageToPort(params.giovanni_prompt_port, concatenated_tokens);
 
                                 // Clear the stored tokens
                                 giovanni_tokens.clear();

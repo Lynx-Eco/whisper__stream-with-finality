@@ -1,3 +1,48 @@
+# stream-with-finality
+
+## what
+
+stream-with-finality continuously infers on a sliding window of the last LENGTH ms at a cadence of STEP ms
+
+
+## build
+
+On my mac.. (windows wouldn't have COREML)
+
+    # instantiate
+    cmake -B build -DWHISPER_COREML=1 -DWHISPER_BUILD_EXAMPLES=1 -DWHISPER_SDL2=1
+    # build
+    cmake --build build
+
+## run
+
+    ./build/bin/stream-with-finality -m ./models/ggml-base.bin --confirmed-tokens-port 42000 --raw-port 42001 --giovanni-prompt-port 
+
+If we like we can use xpanes to open a splitpane and watch the UDP streams.
+
+```./scripts/launchXpanesSplit.
+# ./scripts/launchXpanesSplit.
+xpanes -c "{}" \
+    './build/bin/stream-with-finality -m ./models/ggml-base.bin --confirmed-tokens-port 42000 --raw-port 42001 --giovanni-prompt-port 42010  --step 250 --length 10000 -c 1' \
+    'socat -u UDP-RECV:42000,bind=0.0.0.0 -' \
+    'socat -u UDP-RECV:42001,bind=0.0.0.0 -' \
+    'socat -u UDP-RECV:42010,bind=0.0.0.0 -'
+```
+
+![./scripts/launchXpanesSplit.sh ](launchXpanesSplit.sh.png)
+
+
+## output streams
+
+The results are sent to the following ports:
+
+    int32_t confirmed_tokens_port = 42000;
+    int32_t raw_inference_frame_port = 42001;
+    int32_t giovanni_prompt_port = 42010;
+
+
+---
+
 # stream
 
 This is a naive example of performing real-time inference on audio from your microphone.

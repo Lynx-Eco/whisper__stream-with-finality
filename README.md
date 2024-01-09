@@ -16,7 +16,11 @@ On my mac.. (windows and linux wouldn't have COREML .. i'm assuming there is som
 
 ## run
 
-    ./build/bin/stream-with-finality -m ./models/ggml-base.bin --confirmed-tokens-port 42000 --raw-port 42001 --giovanni-prompt-port 
+    ./build/bin/stream-with-finality -m ./models/ggml-base.bin --confirmed-tokens-port 42000 --raw-port 42001 --giovanni-prompt-port 42010  --step 250 --length 10000 -c 1
+
+make sure to correctly set the audio device with "-c" .. the prog will list the devices in the beginning
+
+#### Pretty view with tmux xpanes
 
 If we like we can use xpanes to open a splitpane and watch the UDP streams.
 

@@ -438,6 +438,8 @@ int main(int argc, char ** argv) {
                         std::tm now_tm = *std::localtime(&now_c);
                         std::stringstream datetime_ss;
                         datetime_ss << std::put_time(&now_tm, "%Y-%m-%d %H:%M:%S");
+                        auto ms = chrono::duration_cast<chrono::milliseconds>(now.time_since_epoch()) % 1000;
+                        datetime_ss << '.' << std::setfill('0') << std::setw(3) << ms.count();
 
                         // Get hostname
                         std::array<char, 256> hostname_buffer{};

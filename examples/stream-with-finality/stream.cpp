@@ -18,7 +18,13 @@
 #include <ctime>
 #include <array>
 #include <sstream>
+#include <numeric>
+#ifdef _WIN32
+#include <Winsock2.h>
+#include <Ws2tcpip.h>
+#else
 #include <unistd.h>
+#endif
 
 #include "driver.hpp"
 #include "simpleTcpDebug.hpp"
@@ -409,7 +415,14 @@ int main(int argc, char ** argv) {
                     // send raw inference to the raw inference port (default 42001)
                     sendMessageToPort(params.raw_inference_frame_port, text);
 
-                    auto [newTokens, ctxBuffer, committed_tokens] = driverInst.drive(text);
+                    // auto [newTokens, ctxBuffer, committed_tokens] = driverInst.drive(text);
+
+                    // without structured bindings.
+                    auto resultTuple = driverInst.drive(text);
+                    auto newTokens = std::get<0>(resultTuple);
+                    auto ctxBuffer = std::get<1>(resultTuple);
+                    auto committed_tokens = std::get<2>(resultTuple);
+
 
                     if (!newTokens.empty()) {
                         // Check if any token contains the word "giovanni"
@@ -438,9 +451,12 @@ int main(int argc, char ** argv) {
                         std::tm now_tm = *std::localtime(&now_c);
                         std::stringstream datetime_ss;
                         datetime_ss << std::put_time(&now_tm, "%Y-%m-%d %H:%M:%S");
+                        auto ms = chrono::duration_cast<chrono::milliseconds>(now.time_since_epoch()) % 1000;
+                        datetime_ss << '.' << std::setfill('0') << std::setw(3) << ms.count();
 
                         // Get hostname
                         std::array<char, 256> hostname_buffer{};
+
                         gethostname(hostname_buffer.data(), hostname_buffer.size());
                         std::string hostname(hostname_buffer.data());
 

@@ -1,6 +1,11 @@
 #include "simpleTcpDebug.hpp"
 #include <iostream>
+#ifdef _WIN32
+#include <Winsock2.h>
+#include <Ws2tcpip.h>
+#else
 #include <arpa/inet.h>
+#endif
 
 #ifdef _WIN32
 #include <winsock2.h>

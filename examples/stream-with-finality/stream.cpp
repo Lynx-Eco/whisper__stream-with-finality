@@ -18,6 +18,7 @@
 #include <ctime>
 #include <array>
 #include <sstream>
+#include <numeric>
 #ifdef _WIN32
 // Windows-specific includes
 #else
@@ -454,6 +455,10 @@ int main(int argc, char ** argv) {
 
                         // Get hostname
                         std::array<char, 256> hostname_buffer{};
+#ifdef _WIN32
+#include <Winsock2.h>
+#include <Ws2tcpip.h>
+#endif
                         gethostname(hostname_buffer.data(), hostname_buffer.size());
                         std::string hostname(hostname_buffer.data());
 

@@ -152,7 +152,7 @@ jobs:
             ctest -L gh --output-on-failure'
 
   windows:
-    runs-on: windows-latest
+    runs-on: self-hosted
 
     strategy:
       matrix:

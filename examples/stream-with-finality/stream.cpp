@@ -18,7 +18,11 @@
 #include <ctime>
 #include <array>
 #include <sstream>
+#ifdef _WIN32
+// Windows-specific includes
+#else
 #include <unistd.h>
+#endif
 
 #include "driver.hpp"
 #include "simpleTcpDebug.hpp"

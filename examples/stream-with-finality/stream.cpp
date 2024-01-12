@@ -413,7 +413,14 @@ int main(int argc, char ** argv) {
                     // send raw inference to the raw inference port (default 42001)
                     sendMessageToPort(params.raw_inference_frame_port, text);
 
-                    auto [newTokens, ctxBuffer, committed_tokens] = driverInst.drive(text);
+                    // auto [newTokens, ctxBuffer, committed_tokens] = driverInst.drive(text);
+
+                    // without structured bindings.
+                    auto resultTuple = driverInst.drive(text);
+                    auto newTokens = std::get<0>(resultTuple);
+                    auto ctxBuffer = std::get<1>(resultTuple);
+                    auto committed_tokens = std::get<2>(resultTuple);
+
 
                     if (!newTokens.empty()) {
                         // Check if any token contains the word "giovanni"

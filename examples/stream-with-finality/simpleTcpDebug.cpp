@@ -1,8 +1,20 @@
 #include "simpleTcpDebug.hpp"
 #include <iostream>
-#include <sys/socket.h>
+#ifdef _WIN32
+#include <Winsock2.h>
+#include <Ws2tcpip.h>
+#else
 #include <arpa/inet.h>
+#endif
+
+#ifdef _WIN32
+#include <winsock2.h>
+#include <Ws2tcpip.h>
+#pragma comment(lib, "ws2_32.lib")
+#else
+#include <sys/socket.h>
 #include <unistd.h>
+#endif
 
 void sendMessageToPort(int port, std::string message) {
     int sock = socket(AF_INET, SOCK_DGRAM, 0);

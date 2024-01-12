@@ -157,7 +157,7 @@ jobs:
     strategy:
       matrix:
         build: [Release]
-        arch: [Win32, x64]
+        arch: [x64]
         sdl2: [ON]
         include:
           - arch: Win32

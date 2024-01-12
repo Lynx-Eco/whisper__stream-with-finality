@@ -160,9 +160,9 @@ jobs:
         arch: [x64]
         sdl2: [ON]
         include:
-          - arch: Win32
-            s2arc: x86
-            jnaPath: win32-x86
+          # - arch: Win32
+          #   s2arc: x86
+          #   jnaPath: win32-x86
           - arch: x64
             s2arc: x64
             jnaPath: win32-x86-64

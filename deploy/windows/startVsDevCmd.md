@@ -10,8 +10,8 @@ C:\Users\narge>"C:\Program Files\7-Zip\7z.exe" x sdl2.zip
 cmake -B build -DWHISPER_BUILD_EXAMPLES=1 -DWHISPER_SDL2=1 -DSDL2_DIR=C:\Users\narge\SDL2-2.28.5\cmake
 
 ## build dat shit.
-cd ./build
-msbuild ALL_BUILD.vcxproj -t:build -p:configuration=Release -p:platform=x64
+<!-- cd ./build -->
+msbuild .\build\ALL_BUILD.vcxproj -t:build -p:configuration=Release -p:platform=x64
 
 
 ## Ok now copy the SDL2.dll file into scope

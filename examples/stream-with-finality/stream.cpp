@@ -117,7 +117,7 @@ bool whisper_params_parse(int argc, char ** argv, whisper_params & params) {
         else if (                  arg == "--raw-port")                   { params.raw_inference_frame_port = stoi(argv[++i]); }
         else if (                  arg == "--confirmed-tokens-port")      { params.confirmed_tokens_port = stoi(argv[++i]); }
         else if (                  arg == "--giovanni-prompt-port")       { params.giovanni_prompt_port = stoi(argv[++i]); }
-        else if (                  arg == "--udp_target_addr"    )        { params.udp_target_addr = argv[++i]; }
+        else if (                  arg == "--udp-target-addr"    )        { params.udp_target_addr = argv[++i]; }
 
         else {
             fprintf(stderr, "error: unknown argument: %s\n", arg.c_str());

@@ -3,23 +3,34 @@
 #ifdef _WIN32
 #include <Winsock2.h>
 #include <Ws2tcpip.h>
-#else
-#include <arpa/inet.h>
-#endif
-
-#ifdef _WIN32
-#include <winsock2.h>
-#include <Ws2tcpip.h>
 #pragma comment(lib, "ws2_32.lib")
 #else
+#include <arpa/inet.h>
 #include <sys/socket.h>
 #include <unistd.h>
 #endif
 
-void sendMessageToPort(int port, std::string message) {
+void sendMessageToPort(int port, const std::string message) {
+    #ifdef _WIN32
+    WSADATA wsa_data;
+    if (WSAStartup(MAKEWORD(2, 2), &wsa_data) != 0) {
+        std::cerr << "WSAStartup failed with error: " << WSAGetLastError() << std::endl;
+        return;
+    }
+    #endif
+
     int sock = socket(AF_INET, SOCK_DGRAM, 0);
     if (sock == -1) {
-        std::cerr << "Could not create socket" << std::endl;
+        std::cerr << "Could not create socket. Error: " 
+                  #ifdef _WIN32
+                  << WSAGetLastError()
+                  #else
+                  << errno
+                  #endif
+                  << std::endl;
+        #ifdef _WIN32
+        WSACleanup();
+        #endif
         return;
     }
 
@@ -28,16 +39,27 @@ void sendMessageToPort(int port, std::string message) {
     server.sin_family = AF_INET;
     server.sin_port = htons(port);
 
-    // Since UDP is connectionless, we do not need to connect to the server
-    // Removed the connect() call
-
-    message = message + '\n'; // Prepend "hello " to the message
     if (sendto(sock, message.c_str(), message.size(), 0, (struct sockaddr *)&server, sizeof(server)) < 0) {
-        std::cerr << "Send failed" << std::endl;
+        std::cerr << "Send failed with error: " 
+                  #ifdef _WIN32
+                  << WSAGetLastError()
+                  #else
+                  << errno
+                  #endif
+                  << std::endl;
+        #ifdef _WIN32
+        closesocket(sock);
+        WSACleanup();
+        #else
+        close(sock);
+        #endif
         return;
     }
 
-    // In UDP, there is no need to close the socket after each send
-    // You can close it when you want to stop the UDP service or when the program ends
-    // Removed the close() call
+    #ifdef _WIN32
+    closesocket(sock);
+    WSACleanup();
+    #else
+    close(sock);
+    #endif
 }

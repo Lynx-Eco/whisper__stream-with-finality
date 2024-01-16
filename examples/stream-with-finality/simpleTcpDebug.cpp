@@ -10,7 +10,7 @@
 #include <unistd.h>
 #endif
 
-void sendMessageToPort(int port, const std::string message) {
+void sendMessageToPort(const char* host, int port, const std::string message) {
     #ifdef _WIN32
     WSADATA wsa_data;
     if (WSAStartup(MAKEWORD(2, 2), &wsa_data) != 0) {
@@ -35,7 +35,7 @@ void sendMessageToPort(int port, const std::string message) {
     }
 
     sockaddr_in server;
-    server.sin_addr.s_addr = inet_addr("127.0.0.1");
+    server.sin_addr.s_addr = inet_addr(host);
     server.sin_family = AF_INET;
     server.sin_port = htons(port);
 

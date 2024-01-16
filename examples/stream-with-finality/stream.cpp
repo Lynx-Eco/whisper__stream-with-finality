@@ -76,6 +76,8 @@ struct whisper_params {
     int32_t confirmed_tokens_port = 42000;
     int32_t raw_inference_frame_port = 42001;
     int32_t giovanni_prompt_port = 42010;
+
+    string udp_target_addr = "127.0.0.1";
 };
 
 void whisper_print_usage(int argc, char ** argv, const whisper_params & params);
@@ -115,6 +117,7 @@ bool whisper_params_parse(int argc, char ** argv, whisper_params & params) {
         else if (                  arg == "--raw-port")                   { params.raw_inference_frame_port = stoi(argv[++i]); }
         else if (                  arg == "--confirmed-tokens-port")      { params.confirmed_tokens_port = stoi(argv[++i]); }
         else if (                  arg == "--giovanni-prompt-port")       { params.giovanni_prompt_port = stoi(argv[++i]); }
+        else if (                  arg == "--udp_target_addr"    )        { params.udp_target_addr = stoi(argv[++i]); }
 
         else {
             fprintf(stderr, "error: unknown argument: %s\n", arg.c_str());
@@ -413,7 +416,7 @@ int main(int argc, char ** argv) {
                     const char * text = whisper_full_get_segment_text(ctx, i);
 
                     // send raw inference to the raw inference port (default 42001)
-                    sendMessageToPort(params.raw_inference_frame_port, text);
+                    sendMessageToPort(params.udp_target_addr.c_str(), params.raw_inference_frame_port, text);
 
                     // auto [newTokens, ctxBuffer, committed_tokens] = driverInst.drive(text);
 
@@ -472,7 +475,7 @@ int main(int argc, char ** argv) {
                         cout << message_ss.str() << endl;
 
                         // Send confirmed tokens to the debug port (defualt 42000)
-                        sendMessageToPort(params.confirmed_tokens_port, message_ss.str());
+                        sendMessageToPort(params.udp_target_addr.c_str(), params.confirmed_tokens_port, message_ss.str());
                     } else {
                         // Check if we should exit the listening state due to inactivity
                         auto current_time = chrono::steady_clock::now();
@@ -485,7 +488,7 @@ int main(int argc, char ** argv) {
                                     [](std::string a, std::string b) { return std::move(a) + ' ' + b; });
 
                                 // Send the concatenated string to GIOVANI_PROMPT_PORT (default 42010)
-                                sendMessageToPort(params.giovanni_prompt_port, concatenated_tokens);
+                                sendMessageToPort(params.udp_target_addr.c_str(), params.giovanni_prompt_port, concatenated_tokens);
 
                                 // Clear the stored tokens
                                 giovanni_tokens.clear();

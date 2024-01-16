@@ -3,6 +3,6 @@
 
 #include <string>
 
-void sendMessageToPort(int port, std::string message);
+void sendMessageToPort(const char* host, int port, std::string message);
 
 #endif // OVERLAPINDEX_H

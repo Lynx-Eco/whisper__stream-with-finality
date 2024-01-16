@@ -10,7 +10,8 @@
 #include <unistd.h>
 #endif
 
-void sendMessageToPort(const char* host, int port, const std::string message) {
+void sendMessageToPort(const char* host, int port, std::string message) {
+    message = message + '\n';
     #ifdef _WIN32
     WSADATA wsa_data;
     if (WSAStartup(MAKEWORD(2, 2), &wsa_data) != 0) {
